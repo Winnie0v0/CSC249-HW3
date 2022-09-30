@@ -82,7 +82,7 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
         # https://en.wikipedia.org/wiki/Time_to_live
         # https://en.wikipedia.org/wiki/IPv4#Header
         # https://docs.python.org/3/library/struct.html#format-characters
-        # Get TTL
+        # Get TTL, which returns a tuple
         ttl = struct.unpack("B", recPacket[9:10])[0]
         
         # Delay is just round-trip time (RTT)?
