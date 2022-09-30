@@ -31,6 +31,8 @@ Pinging 142.250.80.100 using Python:
 
  8 bytes from 142.250.80.100: icmp_seq=1 ttl=1 time=18.818 ms
 
+ 
+
 www.baidu.com in Asia
 
 Pinging 74.6.136.150 using Python:
@@ -54,6 +56,8 @@ Pinging 74.6.136.150 using Python:
  8 bytes from 74.6.136.150: icmp_seq=1 ttl=1 time=27.302 ms
 
  8 bytes from 74.6.136.150: icmp_seq=1 ttl=1 time=26.497 ms
+
+
 
 www.louvre.fr in Europe
 
@@ -79,6 +83,8 @@ Pinging 89.185.38.196 using Python:
 
  8 bytes from 89.185.38.196: icmp_seq=1 ttl=1 time=100.866 ms
 
+
+
 www.iziko.org.za in Africa
 
 Pinging 146.231.128.43 using Python:
@@ -102,6 +108,8 @@ Pinging 146.231.128.43 using Python:
  8 bytes from 146.231.128.43: icmp_seq=1 ttl=1 time=325.266 ms
 
  8 bytes from 146.231.128.43: icmp_seq=1 ttl=1 time=328.647 ms
+
+
 
 * traceroute
 
@@ -128,6 +136,8 @@ www.google.com in North America
 10 rtt=11 ms 142.251.65.115
 
 11 rtt=17 ms 142.250.80.100
+
+
 
 www.baidu.com in Asia
 
@@ -159,6 +169,8 @@ www.baidu.com in Asia
 
  14 rtt=23 ms 74.6.136.150
 
+
+
 www.louvre.fr in Europe
 
  1 rtt=14 ms 131.229.195.254
@@ -188,6 +200,8 @@ www.louvre.fr in Europe
  13 rtt=96 ms 89.185.58.93
 
  14 rtt=100 ms 89.185.38.196
+
+
 
 www.iziko.org.za in Africa
 
@@ -234,5 +248,5 @@ www.iziko.org.za in Africa
  21 rtt=247 ms 192.42.99.231
 
  22 rtt=243 ms 146.231.135.21
- 
+
  23 rtt=304 ms 146.231.128.43
