@@ -12,7 +12,10 @@ import binascii
 
 ICMP_ECHO_REQUEST = 8
 MAX_HOPS = 30
-TIMEOUT = 2.0
+# To solve "timeout must be non-negative" error
+# We can increase TIMEOUT, to allow more time to trace route
+# TIMEOUT = 2.0
+TIMEOUT = 3.0
 TRIES = 2
 
 # The packet that we shall send to each router along the path is the ICMP echo
@@ -34,7 +37,7 @@ def build_packet():
     myID = os.getpid() & 0xFFFF
 
     # Question: What is "bbHHh"
-    # Answer: It's format charecters
+    # Answer: It's format characters
     # https://docs.python.org/3/library/struct.html#format-characters
 
     # Question: We don't need ID in this header?
@@ -52,10 +55,6 @@ def build_packet():
     myChecksum = checksum(''.join(map(chr, header+data)))
 
     # Get the right checksum, and put in the header 
-
-    # Question: What is darwin?
-    # Answer: It's to check what's your operating system
-    # Interestingly Mac OS x is darwin
     if sys.platform == 'darwin':
         # Convert 16-bit integers from host to network byte order 
         myChecksum = htons(myChecksum) & 0xffff
@@ -85,8 +84,11 @@ def get_route(hostname):
             # Task: Make a raw socket named mySocket
 
             # Question: What's icmp here?
-            # Answer: icmp is a protocal which provides a common ground for computers to communicate
-            # TODO: Look into protocals
+            # Answer: icmp is a protocol which provides a common ground for computers to communicate
+            # A network protocol is an established set of rules 
+            # that determine how data is transmitted between different devices in the same network. 
+            # Essentially, it allows connected devices to communicate with each other, 
+            # regardless of any differences in their internal processes, structure or design.
             icmp = getprotobyname("icmp") 
 
             # SOCK_RAW is a powerful socket type. For more details:	
@@ -135,7 +137,8 @@ def get_route(hostname):
                 # Fill in end #
                 #-------------#
                 
-                # TODO: Why are there different types?
+                # Question: Why are there different types?
+                # Answer: https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol#Control_messages
                 if types == 11:
                     bytes = struct.calcsize("d")
                     timeSent = struct.unpack("d", recvPacket[28:28 +bytes])[0]
@@ -160,18 +163,15 @@ def get_route(hostname):
             finally:
                 mySocket.close()
 
-# TODO
 if __name__ == '__main__':
     print("www.google.com in North America")
     get_route("www.google.com")
     print("")
-    print("www.yahoo.co.in in Asia")
+    print("www.baidu.com in Asia")
     get_route("www.yahoo.co.in")
     print("")
-    print("www.ox.ac.uk in Europe")
-    get_route("www.ox.ac.uk")
+    print("www.louvre.fr in Europe")
+    get_route("www.louvre.fr")
     print("")
-    print("www.ru.ac.za in Africa")
+    print("www.iziko.org.za in Africa")
     get_route("www.ru.ac.za")
-
-# TODO: Reflection

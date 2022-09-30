@@ -66,7 +66,7 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
 
         # Task: Fetch the ICMP header from the IP packet
 
-        # Question: Where did we learned about the combinition of headers?
+        # Question: Where did we learned about the combination of headers?
         # Answer: It's in slack https://smith.enterprise.slack.com/files/U3ZF37THD/F043KU2LE7P/icmp_header_handout.pdf
         header = recPacket[20:28]
 
@@ -75,45 +75,31 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
         type, code, checksum, id, sequence = struct.unpack(
             "bbHHh", header)
 
-        # TODO: Does this means "receive the structure ICMP_ECHO_REPLY"
-        # if type == ICMP_ECHO_REQUEST:
-        # Do we need to check ID?
-        # if id ==ID:
-        # Why is type 0?
-        # Do we need to check anything here?
-        if type == 0:
+        # Question: is timeLeft equivalent to time to live (TTL)?
+        # Answer: No, TTT is how many hops left not a time.
+        # It is not from icmp header but can be unpacked from other packet
+        # In the IPv4 header, TTL is the 9th octet of 20
+        # https://en.wikipedia.org/wiki/Time_to_live
+        # https://en.wikipedia.org/wiki/IPv4#Header
+        # https://docs.python.org/3/library/struct.html#format-characters
+        # Get TTL
+        ttl = struct.unpack("B", recPacket[9:10])[0]
+        
+        # Delay is just round-trip time (RTT)?
+        bytes = struct.calcsize("d")
+        timeSent = struct.unpack("d", recPacket[28:28 + bytes])[0]
+        rrt = timeReceived - timeSent
 
-            # Question: is timeLeft equivalent to time to live (TTL)?
-            # Answer: No, TTL is not from icmp header but can be upacked from other packet
-                    # In the IPv4 header, TTL is the 9th octet of 20
-                    # https://en.wikipedia.org/wiki/Time_to_live
-                    # https://en.wikipedia.org/wiki/IPv4#Header
-                    # But it's a little hard to implement here because we don't have the format
-                    # https://docs.python.org/3/library/struct.html#format-characters
-            # TODO: Can we use the following code to get TTL?
-            # If so why don't we need to manually add them into the pack?
-            # Is it because they are not optional?
-            # ttl = struct.unpack("d", recPacket[9:10])
-            ttl = timeLeft-howLongInSelect
-            
-            # TODO: Is delay just round-trip time (RTT)?
-            # And for this assignment we only need to return delay?
-            bytes = struct.calcsize("d")
-            timeSent = struct.unpack("d", recPacket[28:28 + bytes])[0]
-            rrt = timeReceived - timeSent
-
-            # example from ping google in terminal
-            # 64 bytes from 142.251.40.196: icmp_seq=0 ttl=115 time=257.346 ms
-            # For python old string formatting
-            # https://docs.python.org/3/library/stdtypes.html#old-string-formatting
-            return " %d bytes from %s: icmp_seq=%d ttl=%.0f time=%.3f ms" %(bytes, destAddr, sequence, ttl*1000, rrt*1000)
-            # TODO: Should probably increase sequence somewhere
+        # example from ping google in terminal
+        # 64 bytes from 142.251.40.196: icmp_seq=0 ttl=115 time=257.346 ms
+        # For python old string formatting
+        # https://docs.python.org/3/library/stdtypes.html#old-string-formatting
+        return " %d bytes from %s: icmp_seq=%d ttl=%.0f time=%.3f ms" %(bytes, destAddr, sequence, ttl, rrt*1000)
 
         #-------------#
         # Fill in end #
         #-------------#
 
-        # TODO: Is timeLeft the same as ttl (time to live)
         timeLeft = timeLeft - howLongInSelect 
         
         if timeLeft <= 0:
@@ -128,7 +114,9 @@ def sendOnePing(mySocket, destAddr, ID):
     # Make a dummy header with a 0 checksum
  
     # struct -- Interpret strings as packed binary data
+    # Even though the type is ICMP_ECHO_REQUEST in the request, the reply type is always 0.
     header = struct.pack("bbHHh", ICMP_ECHO_REQUEST, 0, myChecksum, ID, 1) 
+    # multiple icmp packet
     data = struct.pack("d", time.time()) #format string
 
     # Calculate the checksum on the data and the dummy header. 
@@ -136,17 +124,24 @@ def sendOnePing(mySocket, destAddr, ID):
     myChecksum = checksum(''.join(map(chr, header+data)))
 
     # Get the right checksum, and put in the header 
-    # TODO: What does darwin means?
+
+    # Question: What is darwin?
+    # Answer: It's to check what's your operating system
+    # Interestingly Mac OS x is darwin
     if sys.platform == 'darwin':
         # Convert 16-bit integers from host to network byte order 
         myChecksum = htons(myChecksum) & 0xffff
     else:
         myChecksum = htons(myChecksum)
 
+    # Can increase the sequence when necessary
     header = struct.pack("bbHHh", ICMP_ECHO_REQUEST, 0, myChecksum, ID, 1) 
     packet = header + data
 
-    # TODO: What exactly is a socket?
+    # Question: What exactly is a socket?
+    # Answer: A network socket is a software structure within a network node of a computer network 
+    # that serves as an endpoint for sending and receiving data across the network.
+    # https://en.wikipedia.org/wiki/Network_socket
     mySocket.sendto(packet, (destAddr, 1)) # AF_INET address must be tuple, not str 
     # Both LISTS and TUPLES consist of a number of objects
     # which can be referenced by their position number within the object.
@@ -154,7 +149,8 @@ def sendOnePing(mySocket, destAddr, ID):
 
 
 def doOnePing(destAddr, timeout): 
-    # TODO: What does this do?
+    # Question: What does this do?
+    # Answer: https://pythontic.com/modules/socket/getprotobyname
     icmp = getprotobyname("icmp")
 
     # SOCK_RAW is a powerful socket type. For more details:	
@@ -177,7 +173,6 @@ def ping(host, timeout=1):
     # the client assumes that either the client's ping or the server's pong is lost 
     dest = gethostbyname(host)
     print("Pinging " + dest + " using Python:") 
-    print("")
 
     # Send ping requests to a server separated by approximately one second 
     while True :
@@ -187,16 +182,12 @@ def ping(host, timeout=1):
     return delay
 
 # Runs program
-# TODO
 if __name__ == '__main__':
-    print("www.google.com in North America")
-    ping("www.google.com")
-    print("")
-    print("www.yahoo.co.in in Asia")
-    ping("www.yahoo.co.in")
-    print("")
-    print("www.ox.ac.uk in Europe")
-    ping("www.ox.ac.uk")
-    print("")
-    print("www.ru.ac.za in Africa")
+    # print("www.google.com in North America")
+    # ping("www.google.com")
+    # print("www.baidu.com in Asia")
+    # ping("www.yahoo.co.in")
+    # print("www.louvre.fr in Europe")
+    # ping("www.louvre.fr")
+    print("www.iziko.org.za in Africa")
     ping("www.ru.ac.za")
