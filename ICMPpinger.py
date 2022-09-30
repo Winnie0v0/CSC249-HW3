@@ -76,7 +76,7 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
             "bbHHh", header)
 
         # Question: is timeLeft equivalent to time to live (TTL)?
-        # Answer: No, TTT is how many hops left not a time.
+        # Answer: No, TTT is how many failed-hops left not a time.
         # It is not from icmp header but can be unpacked from other packet
         # In the IPv4 header, TTL is the 9th octet of 20
         # https://en.wikipedia.org/wiki/Time_to_live
