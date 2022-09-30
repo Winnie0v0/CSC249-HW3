@@ -6,6 +6,7 @@ What worked, what didn't, what advice would you give someone taking this course 
 
 Test your `ping` and `traceroute` programs on 4 target hosts, each on a different continent and include the output below.
 * ping
+
 www.google.com in North America
 Pinging 142.250.80.100 using Python:
  8 bytes from 142.250.80.100: icmp_seq=1 ttl=1 time=13.951 ms
@@ -59,6 +60,7 @@ Pinging 146.231.128.43 using Python:
  8 bytes from 146.231.128.43: icmp_seq=1 ttl=1 time=328.647 ms
 
 * traceroute
+
 www.google.com in North America
  1 rtt=8 ms 131.229.195.254
  2 rtt=12 ms 131.229.11.105
